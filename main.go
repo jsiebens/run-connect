@@ -76,14 +76,16 @@ func createClientCommand() *coral.Command {
 	var remote string
 	var idToken string
 	var serviceAccount string
+	var clientId string
 
 	command.Flags().StringVarP(&addr, "addr", "a", "127.0.0.1:8080", "bind to this address.")
 	command.Flags().StringVarP(&remote, "remote", "r", "http://127.0.0.1:8080", "")
 	command.Flags().StringVarP(&idToken, "id-token", "i", "", "")
 	command.Flags().StringVarP(&serviceAccount, "service-account", "s", "", "")
+	command.Flags().StringVarP(&clientId, "client-id", "c", "", "")
 
 	command.RunE = func(cmd *coral.Command, args []string) error {
-		return core.StartClient(cmd.Context(), addr, remote, idToken, serviceAccount)
+		return core.StartClient(cmd.Context(), addr, remote, idToken, serviceAccount, clientId)
 	}
 
 	return command

@@ -27,6 +27,11 @@ type Server struct {
 }
 
 func (s *Server) tunnel(w http.ResponseWriter, req *http.Request) {
+	if req.URL.Path == "/health" {
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
 	ctx := req.Context()
 
 	conn, err := s.acceptHTTP(w, req)

@@ -15,8 +15,8 @@ import (
 	"net/url"
 )
 
-func StartClient(ctx context.Context, addr, remote string, idToken, serviceAccount string) error {
-	c := &Client{addr, remote, idToken, serviceAccount}
+func StartClient(ctx context.Context, addr, remote string, idToken, serviceAccount, clientId string) error {
+	c := &Client{addr, remote, idToken, serviceAccount, clientId}
 	return c.start(ctx)
 }
 
@@ -25,6 +25,7 @@ type Client struct {
 	remote         string
 	idToken        string
 	serviceAccount string
+	clientId       string
 }
 
 func (c *Client) start(ctx context.Context) error {
@@ -152,6 +153,10 @@ func (c *Client) getToken(ctx context.Context) (string, error) {
 	if c.serviceAccount != "" {
 		audience := c.remote
 
+		if c.clientId != "" {
+			audience = c.clientId
+		}
+
 		service, err := iamcredentials.NewService(ctx)
 
 		if err != nil {
@@ -160,7 +165,8 @@ func (c *Client) getToken(ctx context.Context) (string, error) {
 
 		name := fmt.Sprintf("projects/-/serviceAccounts/%s", c.serviceAccount)
 		tokenRequest := &iamcredentials.GenerateIdTokenRequest{
-			Audience: audience,
+			Audience:     audience,
+			IncludeEmail: true,
 		}
 
 		at, err := service.Projects.ServiceAccounts.GenerateIdToken(name, tokenRequest).Do()
